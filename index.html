@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style type="text/css">
+	.container {
+		max-width: 100%;
+		height: auto;
+		overflow: hidden;
+	}
+	.video {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+	}
+	</style>
+</head>
+<body class='container'>
+<div id="dropContainer" style="border:1px solid black;height:100px;">
+   Drop Here
+</div>
+  Should update here:
+  <input type="file" id="fileInput" />
+  <embed id="player"></embed>
+</body>
+<script type="text/javascript">
+		(function localSwfPlayer() {
+			'use strict'
+			var URL = window.URL || window.webkitURL
+function setSwfSrc(swfsrc){
+  var swfnode=document.getElementById('player');
+  var clone=swfnode.cloneNode(true);
+  clone.setAttribute('src',swfsrc);
+  clone.setAttribute('type', 'application/x-shockwave-flash');
+  clone.setAttribute('class', 'video');
+  swfnode.parentNode.replaceChild(clone,swfnode);
+}
+// dragover and dragenter events need to have 'preventDefault' called
+// in order for the 'drop' event to register. 
+// See: https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/Drag_operations#droptargets
+dropContainer.ondragover = dropContainer.ondragenter = function(evt) {
+  evt.preventDefault();
+};
+
+dropContainer.ondrop = function(evt) {
+  // pretty simple -- but not for IE :(
+  fileInput.files = evt.dataTransfer.files;
+  evt.preventDefault();
+};
+
+var playSelectedFile = function(event) {
+	var file = this.files[0]
+	console.log(file)
+	var fileURL = URL.createObjectURL(file)
+	console.log(fileURL)
+	setSwfSrc(fileURL)
+}
+
+var inputNode = document.getElementById('fileInput');
+fileInput.addEventListener('change', playSelectedFile, false);
+})()
+	</script>
+</html>
