@@ -2,66 +2,171 @@
 <html>
 <head>
 	<style type="text/css">
-	.container {
-		max-width: 100%;
-		height: auto;
-		overflow: hidden;
-	}
-	.video {
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-	}
+		.container {
+			max-width: 100%;
+			height: auto;
+			overflow: hidden;
+		}
+
+		.video {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+		}
+
+		body {
+				background: #f1c40f;
+			}
+
+		#div1 {
+				background: #000000;
+				color:aliceblue;
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+			}
+
+		.wrap {
+			position: absolute;
+			top: 0;
+			left: 0;
+			bottom: 0;
+			right: 0;
+			height: 100px;
+			width: 600px;
+			margin: auto;
+			font-size: 18px;
+		}
+
+		#div2 {
+			background: #067bc9;
+			color:aliceblue;
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+		}
+
+		.button {
+				background-color: transparent;
+				border: 2px solid;
+				border-radius: 4px;
+				display: inline-block;
+				color: #f1a80a;
+				cursor: pointer;
+				font-size: 34px;
+				font-weight: 600;
+				height: 40px;
+				line-height: 40px;
+				letter-spacing: 1px;
+				margin: auto;
+				overflow: hidden;
+				padding: 0 22px;
+				text-align: center;
+				text-transform: uppercase;
+				transition: all .2s ease-in-out;
+			}
+
+		.div-upload {
+			padding: 4px 10px;
+			height: 30px;
+			line-height: 20px;
+			position: relative;
+			cursor: pointer;
+			color: #000;
+			background: #fafafa;
+			border: 1px solid #ddd;
+			border-radius: 4px;
+			overflow: hidden;
+			display: inline-block;
+		}
+		.div-upload input {
+				position: absolute;
+				font-size: 100px;
+				right: 0;
+				top: 0;
+				opacity: 0;
+				filter: alpha(opacity=0);
+				cursor: pointer
+		}
+		.div-upload:hover {
+				color: #444;
+				background: #eee;
+				border-color: #ccc;
+				text-decoration: none
+		}
 	</style>
 </head>
+
 <body class='container'>
-<div id="dropContainer" style="border:1px solid black;height:100px;">
-   Drop Here
-</div>
-  Should update here:
-  <input type="file" id="fileInput" />
-  <embed id="player"></embed>
-	
-  <a href='http://get.adobe.com/cn/flashplayer/'>请安装 Flash player</a>
+	<div id = "div1">
+		<div class = "wrap">
+			<p>您未安装Flash Player或者被浏览器禁用了，请点击下面按钮激活</p>
+			<a href="http://get.adobe.com/cn/flashplayer/" class="button">安装或激活Flash player</a>		
+		</div>
+	</div>
+	<div id = "div2">
+			<div class = "wrap">
+				<p>点击下面按钮，然后选中swf文件即可</p>
+				<div class='div-upload'>
+					<input type="file" id="fileInput" class="fileinput"/>打开swf文件
+				</div>
+			</div>
+		<embed id="player"></embed>		
+	</div>
+
 
 </body>
 <script type="text/javascript">
-		(function localSwfPlayer() {
-			'use strict'
-			var URL = window.URL || window.webkitURL
-function setSwfSrc(swfsrc){
-  var swfnode=document.getElementById('player');
-  var clone=swfnode.cloneNode(true);
-  clone.setAttribute('src',swfsrc);
-  clone.setAttribute('type', 'application/x-shockwave-flash');
-  clone.setAttribute('class', 'video');
-  swfnode.parentNode.replaceChild(clone,swfnode);
-}
-// dragover and dragenter events need to have 'preventDefault' called
-// in order for the 'drop' event to register. 
-// See: https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/Drag_operations#droptargets
-dropContainer.ondragover = dropContainer.ondragenter = function(evt) {
-  evt.preventDefault();
-};
+	(function localSwfPlayer() {
+		'use strict'
+		var URL = window.URL || window.webkitURL
+		function setSwfSrc(swfsrc) {
+			var swfnode = document.getElementById('player');
+			var clone = swfnode.cloneNode(true);
+			clone.setAttribute('src', swfsrc);
+			clone.setAttribute('type', 'application/x-shockwave-flash');
+			clone.setAttribute('class', 'video');
+			swfnode.parentNode.replaceChild(clone, swfnode);
+		}
 
-dropContainer.ondrop = function(evt) {
-  // pretty simple -- but not for IE :(
-  fileInput.files = evt.dataTransfer.files;
-  evt.preventDefault();
-};
+		var playSelectedFile = function (event) {
+			var file = this.files[0]
+			var fileURL = URL.createObjectURL(file)
+			setSwfSrc(fileURL)
+		}
 
-var playSelectedFile = function(event) {
-	var file = this.files[0]
-	console.log(file)
-	var fileURL = URL.createObjectURL(file)
-	console.log(fileURL)
-	setSwfSrc(fileURL)
-}
+		var inputNode = document.getElementById('fileInput');
+		var div1 = document.getElementById('div1');
+		var div2 = document.getElementById('div2');
+		fileInput.addEventListener('change', playSelectedFile, false);
 
-var inputNode = document.getElementById('fileInput');
-fileInput.addEventListener('change', playSelectedFile, false);
-})()
-	</script>
+		var hasFlash = function () {
+				if(typeof window.ActiveXObject != "undefined") {
+					try {
+							return new ActiveXObject("ShockwaveFlash.ShockwaveFlash");
+					}
+					catch(e) {
+							return false;
+					}
+				}
+				else {
+					return navigator.plugins['Shockwave Flash'];
+				}
+		}
+
+		if(!hasFlash()) {
+			div1.style.display = 'block'
+			div2.style.display = 'none'
+		} else {
+			div1.style.display = 'none'
+			div2.style.display = 'block'
+		}
+	})()
+</script>
 </html>
